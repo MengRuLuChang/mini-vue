@@ -2,7 +2,7 @@
  * @Author: ding yipeng 
  * @Date: 2019-12-04 15:40:39 
  * @Last Modified by: ding yipeng
- * @Last Modified time: 2019-12-04 16:23:05
+ * @Last Modified time: 2019-12-06 16:25:29
  */
 /* 负责解析模板内容 */
 class Compile {
@@ -47,7 +47,7 @@ class Compile {
       //编译子节点
       if (this.isElementNode(node)) {
         this.compileElement(node)
-        //如果是元素，需要解析指令
+        //如果是元素节点，需要解析指令
 
       }
       if (this.isTextNode(node)) {
@@ -116,16 +116,30 @@ let CompileUtil = {
     if (reg.test(txt)) {
       let expr = RegExp.$1
       node.textContent = txt.replace(reg, CompileUtil.getVMValue(vm, expr))
+
+      new Watcher(vm, expr, (newValue, oldValue) => {
+        node.textContent = txt.replace(reg, newValue)
+      })
     }
   },
   text(node, vm, expr) {
     node.textContent = this.getVMValue(vm, expr)
+    // 通过watcher对象，监听expr中数据的变化，执行回调函数，更新视图
+    new Watcher(vm, expr, (newValue, oldValue) => {
+      node.textContent = newValue
+    })
   },
   html(node, vm, expr) {
     node.innerHTML = this.getVMValue(vm, expr)
+    new Watcher(vm, expr, (newValue, oldValue) => {
+      node.innerHTML = newValue
+    })
   },
   model(node, vm, expr) {
     node.value = this.getVMValue(vm, expr)
+    new Watcher(vm, expr, (newValue, oldValue) => {
+      node.value = newValue
+    })
   },
   eventHandler(node, vm, type, expr) {
     //给当前元素注册事件
