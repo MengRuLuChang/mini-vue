@@ -2,7 +2,7 @@
  * @Author: ding yipeng 
  * @Date: 2019-12-04 15:41:13 
  * @Last Modified by: ding yipeng
- * @Last Modified time: 2019-12-06 16:16:07
+ * @Last Modified time: 2019-12-09 15:07:51
  */
 /* watcher模块负责把compile 模块与observer模块关联起来 */
 class Watcher {
@@ -13,9 +13,14 @@ class Watcher {
     this.expr = expr
     this.cb = cb
 
-
+    //  this表示的就是新创建的watcher对象
+    //存储到Dep，target属性上、
+    Dep.target = this
     //需要把expr的旧值给存储起来
     this.oldValue = this.getVMValue(vm, expr)
+
+    //clear Dep.target
+    Dep.target = null
 
   }
 
@@ -37,5 +42,26 @@ class Watcher {
       data = data[key]
     })
     return data
+  }
+}
+
+//  Dep对象用于管理所有的订阅者和通知这些订阅者
+class Dep {
+  constructor() {
+    //用于管理订阅者
+    this.sub = []
+  }
+
+  //添加订阅者、
+  addSub(watcher) {
+    this.sub.push(watcher)
+  }
+
+  //通知
+  notify() {
+    //遍历所有的订阅者，调用watcher和update方法
+    this.sub.forEach(sub => {
+      sub.update()
+    })
   }
 }

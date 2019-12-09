@@ -11,12 +11,9 @@
 <body>
   <div id="app">
     <p v-text="meg"></p>
-    <p v-html="tag"></p>
-    <input type="text" v-model="msg">
-    <p>{{meg}}</p>
-    <p>{{car.color}}</p>
-    <button v-on:click="clickFn">qwe</button>
-
+    <p>{{car.brand}}</p>
+    <input type="text" v-model="car.brand" name="" id="">
+    <button v-on:click="clickFn">dasd</button>
   </div>
 </body>
 
@@ -31,14 +28,14 @@
     el: "#app",
     data: {
       meg: "hello vue",
-      tag: 'hahaha',
       car: {
+        brand: "bba",
         color: "red"
       }
     },
     methods: {
       clickFn() {
-        console.log(this.$data.meg)
+        this.car.brand = "123"
       }
     }
   })

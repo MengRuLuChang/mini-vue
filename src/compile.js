@@ -2,7 +2,7 @@
  * @Author: ding yipeng 
  * @Date: 2019-12-04 15:40:39 
  * @Last Modified by: ding yipeng
- * @Last Modified time: 2019-12-06 16:25:29
+ * @Last Modified time: 2019-12-09 16:17:56
  */
 /* 负责解析模板内容 */
 class Compile {
@@ -136,7 +136,13 @@ let CompileUtil = {
     })
   },
   model(node, vm, expr) {
+    let that = this
     node.value = this.getVMValue(vm, expr)
+    //实现双向数据绑定，给node注册input 事件。当前元素的value值改变，修改
+    node.addEventListener('input', function () {
+      // vm.$data[expr] = this.value
+      that.setVMValue(vm, expr, this.value)
+    })
     new Watcher(vm, expr, (newValue, oldValue) => {
       node.value = newValue
     })
@@ -157,5 +163,17 @@ let CompileUtil = {
       data = data[key]
     })
     return data
+  },
+  // 用于设置vm中的数据
+  setVMValue(vm, expr, value) {
+    let data = vm.$data
+    let arr = expr.split('.')
+    arr.forEach((key, index) => {
+      if (index < arr.length - 1) {
+        data = data[key]
+      } else {
+        data[key] = value
+      }
+    })
   }
 }
